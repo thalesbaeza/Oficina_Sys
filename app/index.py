@@ -28,15 +28,17 @@ if escolha == '1': #DEMONSTRATIVO DE FLUXO DE CAIXA
     clear()
     data_inicial = datetime.today()
     valores = 0
-    valor = True
+    valorReponsive = True
 
     valorIncial = input("Informe o valor inicial de compra: ")
     clear()
     if modelo != '':
-        while valor:
+        while valorReponsive == 'sim':
             valor = int(input("Inserir o valor da peça: "))
             valores += valor
             clear()
+
+            valorReponsive = input("Precisa Inserir mais valores? (sim/não)")
     else:
         modelo = input("Inserir o modelo do Carro: ")
         clear()
@@ -66,14 +68,14 @@ if escolha == '1': #DEMONSTRATIVO DE FLUXO DE CAIXA
 
     data_final = datetime.today()
 
-    data = [modelo,data_inicial,data_final, valorIncial, valores, int(valorVenda), lucro]
+    dataPedido = [modelo,data_inicial,data_final, valorIncial, valores, int(valorVenda), lucro]
 
     con = sqlite3.connect('oficina_car.db')
 
     cur = con.cursor()
 
     cur.execute('''CREATE TABLE IF NOT EXISTS pedidos (id INTEGER PRIMARY KEY AUTOINCREMENT, modelo_carro TEXT, data_inicial DATETIME, data_final DATETIME, vls_compra REAL, vls_total_pecas REAL , vls_venda REAL, vls_lucro REAL )''')
-    cur.execute('''INSERT INTO pedidos (modelo_carro, data_inicial, data_final, vls_compra, vls_total_pecas, vls_venda, vls_lucro ) VALUES (?, ?, ?, ?, ?, ?,?)''', data)
+    cur.execute('''INSERT INTO pedidos (modelo_carro, data_inicial, data_final, vls_compra, vls_total_pecas, vls_venda, vls_lucro ) VALUES (?, ?, ?, ?, ?, ?,?)''', dataPedido)
 
     con.commit()
     con.close()
@@ -91,20 +93,41 @@ elif escolha == '2': #DEMONSTRATIVO DE FLUXO DE CAIXA
         else:
             True
 
-    escolhaEstoque =  input("1-) Inserir peça no estoque  \n2-) Retirar peça do estoque \n3-) Visualizar o Estoque \n\n Qual é a opção desejada: ")
     con = sqlite3.connect('oficina_car.db')
 
     cur = con.cursor()
 
-    cur.execute('''CREATE TABLE IF NOT EXISTS Estoque (id INTEGER PRIMARY KEY AUTOINCREMENT, modelo_peca TEXT, data DATETIME, Qtd int )''')
+    cur.execute('''CREATE TABLE IF NOT EXISTS estoque (id INTEGER PRIMARY KEY AUTOINCREMENT, sku int, modelo_peca TEXT, data DATETIME, qtd int, setor int, valor real, tipo int)''')
 
     con.commit()
     con.close()
 
-    if escolhaEstoque == '1':
-        print("Inserir peça no estoque")
-        data_entrada = datetime.today()
-    elif escolhaEstoque == '2':
+    response = 'sim'
+
+    if controleEstoque == '1':
+        while response.lower() == 'sim':
+            peca = input("Inserir nome do modelo da peça: ")
+            clear()
+            qtd = int(input("Inserir a quantidade de peça: "))
+            clear()
+            setor = int(input("Inserir o número do setor: ")) #RANGE 1 A 7
+            clear()
+            data_entrada = datetime.today()
+            valorEntrada = int(input("Valor das peças: "))
+            clear()
+
+            dataEstoque = [peca, data_entrada, qtd, setor, valorEntrada, 1]
+
+            con = sqlite3.connect('oficina_car.db')
+            cur = con.cursor()
+            cur.execute(''' INSERT INTO estoque ( sku, modelo_peca, data, qtd, setor, valor) VALUES (?, ?, ?, ? ?)''', dataEstoque)
+            con.commit()
+            con.close()
+
+            response = input("Incluir mais peça no estoque?  (sim/não)")
+            clear()
+
+    elif controleEstoque == '2':
         print("Retirar peça do estoque")
         data_saida = datetime.today()
     else:
