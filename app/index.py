@@ -4,12 +4,7 @@ import os
 
 clear = lambda: os.system('cls')
 
-
-
 #ABERTURA DA APLICAÇÃO
-
-
-
 while True:
     print("*************************")
     print("*************************")
@@ -97,7 +92,7 @@ elif escolha == '2': #DEMONSTRATIVO DE FLUXO DE CAIXA
 
     cur = con.cursor()
 
-    cur.execute('''CREATE TABLE IF NOT EXISTS estoque (id INTEGER PRIMARY KEY AUTOINCREMENT, modelo_peca TEXT, data DATETIME, qtd int, setor int, tipo int)''')
+    cur.execute('''CREATE TABLE IF NOT EXISTS estoque (id INTEGER PRIMARY KEY AUTOINCREMENT, sku INT, modelo_peca TEXT, data DATETIME, qtd INT, tipo INT)''')
 
     con.commit()
     con.close()
@@ -105,38 +100,97 @@ elif escolha == '2': #DEMONSTRATIVO DE FLUXO DE CAIXA
     response = 'sim'
 
     if controleEstoque == '1':
-        while response.lower() == 'sim':
-            peca = input("Inserir nome do modelo da peça: ")
-            clear()
-            qtd = int(input("Inserir a quantidade de peça: "))
-            clear()
-            setor = int(input("Inserir o número do setor: ")) #RANGE 1 A 7
-            clear()
-            data_entrada = datetime.today()
-            clear()
+        con = sqlite3.connect('oficina_car.db')
 
-            dataEstoque = [peca, data_entrada, qtd, setor, 1]
+        cur = con.cursor()
+
+        peca = input("Qual nome da peça para inserir: ")
+        clear()
+
+        cur.execute("SELECT * FROM pecas_gerais WHERE nome_pecas LIKE ? ", ('%'+peca+'%',))
+        for row in cur:
+            print(*row, sep='\t')
+
+        con.close()
+
+        while response.lower() == 'sim':
+
+
+            id = int(input("Inserir nome o ID da peca: "))
+            clear()
 
             con = sqlite3.connect('oficina_car.db')
+        
             cur = con.cursor()
-            cur.execute(''' INSERT INTO estoque ( modelo_peca, data, qtd, setor, tipo) VALUES (?, ?, ?, ?, ?)''', dataEstoque)
-            print("")
-            con.commit()
-            con.close()
 
-            response = input("Incluir mais peça no estoque?  (sim/não) ")
+            data_entrada = datetime.today()
+
+            cur.execute('''CREATE TABLE IF NOT EXISTS estoque (id INTEGER PRIMARY KEY AUTOINCREMENT, sku INT, modelo_peca TEXT, data DATETIME, qtd INT, tipo INT)''')
+            con.commit()
+
+            qtd = int(input("Inserir a quantidade: "))
+            clear()
+
+            sql = cur.execute("INSERT INTO estoque (sku, modelo_peca, data, qtd, tipo) SELECT ? , nome_pecas, ?, ?, ? FROM pecas_gerais WHERE id = ? ", (id, data_entrada, qtd, 1, id,))
+            con.commit()
+            con.close()            
+
+            response = input("Inserir mais peças? (sim/não) ")
             clear()
     elif controleEstoque == '2':
-        print("Retirar peça do estoque")
-        data_saida = datetime.today()
+        con = sqlite3.connect('oficina_car.db')
+
+        cur = con.cursor()
+
+        peca = input("Qual nome da peça para inserir: ")
+        clear()
+
+        cur.execute("SELECT * FROM pecas_gerais WHERE nome_pecas LIKE ? ", ('%'+peca+'%',))
+        for row in cur:
+            print(*row, sep='\t')
+
+        con.close()
+        while response.lower() == 'sim':
+            id = int(input("Inserir nome o ID da peca: "))
+            clear()
+
+            con = sqlite3.connect('oficina_car.db')
+        
+            cur = con.cursor()
+
+            data_entrada = datetime.today()
+
+            qtd = int(input("Inserir a quantidade: ")) * -1
+            clear()
+
+            sql = cur.execute("INSERT INTO estoque (sku, modelo_peca, data, qtd, tipo) SELECT ?, nome_pecas, ?, ?, ? FROM pecas_gerais WHERE id = ? ", (id, data_entrada, qtd, 1, id,))
+            con.commit()
+            con.close()            
+
+            response = input("Inserir mais peças? (sim/não) ")
+            clear()
+    elif controleEstoque == '3':
+        con = sqlite3.connect('oficina_car.db')
+
+        cur = con.cursor()
+
+        peca = input("Qual nome da peça para inserir: ")
+        clear()
+
+        cur.execute("SELECT * FROM pecas_gerais WHERE nome_pecas LIKE ? ", ('%'+peca+'%',))
+        for row in cur:
+            print(*row, sep='\t')
+
+        id = int(input("Inserir nome o ID da peca: "))
+        clear()
+        
+        cur.execute("SELECT sku, modelo_peca, SUM(qtd) AS qtd FROM estoque WHERE sku = ? GROUP BY sku, modelo_peca", (id,))
+        for row in cur:
+            print(*row, sep='\t')
+
+        con.close()
     else:
-        print("Mostrar o estoque atual")
-else:
-    sair = input("Deseja sair? (y/n)")
-    if sair.lower() == 'y':
-        print("Exit")
-    else:
-        print("Precisa voltar para o menu") 
+        print("X")
 
 
 
