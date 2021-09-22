@@ -1,1 +1,0 @@
-# Desenvolvendo sistema contábil
