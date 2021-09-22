@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 import os 
+import conexao
 
 clear = lambda: os.system('cls')
 
