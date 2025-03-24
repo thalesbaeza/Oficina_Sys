@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres
+    container_name: db
+    environment:
+      POSTGRES_USER: ${TYPEORM_USERNAME}
+      POSTGRES_PASSWORD: ${TYPEORM_PASSWORD}
+      POSTGRES_DB: ${TYPEORM_DATABASE}
+    ports:
+      - '5446:5432'
+    restart: unless-stopped
+  rabbitmq:
+    image: rabbitmq:3.8.17-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_logs:/var/log/rabbitmq
+    restart: unless-stopped
+
+volumes:
+  rabbitmq_data:
+  rabbitmq_logs:
