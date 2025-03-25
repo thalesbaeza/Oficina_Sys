@@ -2,9 +2,9 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class DimCustomer1742500459488 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    queryRunner.query(
+    await queryRunner.query(
       `
-        CREATE TABLE dim_customer (
+        CREATE TABLE IF NOT EXISTS dim_customer (
             customer_id SERIAL PRIMARY KEY,           -- Identificador único do cliente
             customer_name VARCHAR(100),               -- Nome do cliente
             customer_phone VARCHAR(20),               -- Telefone do cliente
@@ -16,6 +16,6 @@ export class DimCustomer1742500459488 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    queryRunner.query(`DROP TABLE IF EXISTS dim_customer;`);
+    await queryRunner.query(`DROP TABLE IF EXISTS dim_customer;`);
   }
 }

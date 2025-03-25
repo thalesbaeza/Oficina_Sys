@@ -2,9 +2,9 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class DimTransactionType1742500613678 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    queryRunner.query(
+    await queryRunner.query(
       `
-    CREATE TABLE dim_transaction_type (
+    CREATE TABLE IF NOT EXISTS dim_transaction_type (
         transaction_type_id SERIAL PRIMARY KEY,   -- Identificador único do tipo de transação
         transaction_type_name VARCHAR(50),        -- Nome do tipo de transação (ex: Compra, Venda, Retirada)
         description TEXT                          -- Descrição detalhada do tipo de transação
@@ -38,6 +38,6 @@ export class DimTransactionType1742500613678 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    queryRunner.query(`DROP TABLE IF EXISTS dim_transaction_type;`);
+    await queryRunner.query(`DROP TABLE IF EXISTS dim_transaction_type;`);
   }
 }

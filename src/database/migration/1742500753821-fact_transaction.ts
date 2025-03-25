@@ -2,9 +2,9 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class FactTransaction1742500753821 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    queryRunner.query(
+    await queryRunner.query(
       `
-        CREATE TABLE fact_transaction (
+        CREATE TABLE IF NOT EXISTS fact_transaction (
             transaction_id SERIAL PRIMARY KEY,         -- Identificador único da transação
             car_model_id INT,                         -- Chave estrangeira para o modelo do carro
             customer_id INT,                          -- Chave estrangeira para o cliente
@@ -23,6 +23,6 @@ export class FactTransaction1742500753821 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    queryRunner.query(`DROP TABLE IF EXISTS fact_transaction;`);
+    await queryRunner.query(`DROP TABLE IF EXISTS fact_transaction;`);
   }
 }

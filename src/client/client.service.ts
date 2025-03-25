@@ -15,7 +15,8 @@ export class ClientService {
   createRandomUser() {
     return {
       customer_name: faker.person.firstName() + ' ' + faker.person.lastName(),
-      customer_email: faker.internet.email(),
+      customer_email:
+        faker.person.firstName() + '.' + faker.person.lastName() + '@gmail.com',
       customer_address: faker.location.streetAddress(),
     };
   }

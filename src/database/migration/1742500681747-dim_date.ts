@@ -2,9 +2,9 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class DimDate1742500681747 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    queryRunner.query(
+    await queryRunner.query(
       `
-        CREATE TABLE dim_date (
+        CREATE TABLE IF NOT EXISTS dim_date (
             date_id SERIAL PRIMARY KEY,               -- Identificador único da data
             date DATE,                                -- Data completa
             day INT,                                  -- Dia do mês
@@ -17,6 +17,6 @@ export class DimDate1742500681747 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    queryRunner.query(`DROP TABLE IF EXISTS dim_date;`);
+    await queryRunner.query(`DROP TABLE IF EXISTS dim_date;`);
   }
 }
